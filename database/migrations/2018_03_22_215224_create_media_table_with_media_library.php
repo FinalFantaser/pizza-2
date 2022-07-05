@@ -27,11 +27,6 @@ class CreateMediaTableWithMediaLibrary extends Migration
             $table->unsignedInteger('order_column')->nullable();
             $table->nullableTimestamps();
         });
-
-        Schema::table('posts', function (Blueprint $table) {
-            $table->integer('thumbnail_id')->unsigned()->nullable();
-            $table->foreign('thumbnail_id')->references('id')->on('media')->onDelete('set null');
-        });
     }
 
     /**
@@ -39,11 +34,6 @@ class CreateMediaTableWithMediaLibrary extends Migration
      */
     public function down()
     {
-        Schema::table('posts', function (Blueprint $table) {
-            $table->dropForeign(['thumbnail_id']);
-            $table->dropColumn('thumbnail_id');
-        });
-
         Schema::dropIfExists('media');
     }
 }

@@ -9,8 +9,7 @@ class Role extends Model
 {
     use HasFactory;
 
-    const ROLE_ADMIN = 'admin';
-    const ROLE_EDITOR = 'editor';
+    const ROLE_ADMIN = 'admin'; //Администратор со всеми полномочиями
 
     /**
      * The attributes that are mass assignable.

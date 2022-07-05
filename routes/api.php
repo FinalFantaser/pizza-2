@@ -15,36 +15,34 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->namespace('Api\V1')->group(function () {
     Route::middleware(['auth:api', 'verified'])->group(function () {
-        // Comments
-        Route::apiResource('comments', 'CommentController')->only('destroy');
-        Route::apiResource('posts.comments', 'PostCommentController')->only('store');
+        Route::prefix('admin')->namespace('Admin')->group(function(){
+            //  Пользователи
+            Route::apiResource('users', 'UserController');
 
-        // Posts
-        Route::apiResource('posts', 'PostController')->only(['update', 'store', 'destroy']);
-        Route::post('/posts/{post}/likes', 'PostLikeController@store')->name('posts.likes.store');
-        Route::delete('/posts/{post}/likes', 'PostLikeController@destroy')->name('posts.likes.destroy');
+            //Управление администраторами
+            Route::get('admins.index', 'AdminController@index')->name('admins.index');
+            Route::post('admins.assign', 'AdminController@assign')->name('admins.assign');
+            Route::post('admins.dismiss', 'AdminController@dismiss')->name('admins.dismiss');
 
-        // Users
-        Route::apiResource('users', 'UserController')->only('update');
+            //  Менеджеры по городам
+            Route::prefix('managers')->group(function(){
+                Route::get('index', 'ManagerController@index')->name('managers.index');
+                Route::post('assign', 'ManagerController@assign')->name('managers.assign');
+                Route::delete('dismiss', 'ManagerController@dismiss')->name('managers.dismiss');
+            });
 
-        // Media
-        Route::apiResource('media', 'MediaController')->only(['store', 'destroy']);
+            Route::namespace('Shop')->group(function(){
+                //  Постеры
+                Route::apiResource('posters', 'PosterController');
+                Route::post('posters.enable/{poster}', 'PosterController@enable')->name('posters.enable');
+                Route::post('posters.disable/{poster}', 'PosterController@disable')->name('posters.disable');
+
+                //  Города
+                Route::apiResource('cities', 'CityController')->only(['index', 'store', 'update', 'destroy']);
+
+                //  Категории
+                Route::apiResource('categories', 'CategoryController')->only(['index', 'store', 'show', 'update', 'destroy']);
+            });
+        });
     });
-
-    Route::post('/authenticate', 'Auth\AuthenticateController@authenticate')->name('authenticate');
-
-    // Comments
-    Route::apiResource('posts.comments', 'PostCommentController')->only('index');
-    Route::apiResource('users.comments', 'UserCommentController')->only('index');
-    Route::apiResource('comments', 'CommentController')->only(['index', 'show']);
-
-    // Posts
-    Route::apiResource('posts', 'PostController')->only(['index', 'show']);
-    Route::apiResource('users.posts', 'UserPostController')->only('index');
-
-    // Users
-    Route::apiResource('users', 'UserController')->only(['index', 'show']);
-
-    // Media
-    Route::apiResource('media', 'MediaController')->only('index');
 });
